@@ -8,7 +8,12 @@ export default class App {
   constructor() {
     this.serviceLocator = new ServiceLocator();
 
-    let { promise, resolve, reject } = Promise.withResolvers();
+    // let { promise, resolve, reject } = Promise.withResolvers();
+    let resolve, reject;
+    const promise = new Promise((res, rej) => {
+      resolve = res;
+      reject = rej;
+    });
 
     this.serviceLocator.register('config', promise);
     this.serviceLocator.register('log', new LogService(this.serviceLocator));
