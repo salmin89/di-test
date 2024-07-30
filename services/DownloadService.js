@@ -7,11 +7,12 @@ export default class DownloadService {
     }
     this.serviceLocator = serviceLocator;
     instance = this;
-
-    this.config = this.serviceLocator.get('config');
-    this.logger = this.serviceLocator.get('log');
-    this.uploadService = this.serviceLocator.get('upload');
   }
+
+  get config() { return this.serviceLocator.get('config') }
+  get uploadService() { return this.serviceLocator.get('upload') }
+  get logger() { return this.serviceLocator.get('log') }
+  
 
   download(file) {
     console.log(this.config)
