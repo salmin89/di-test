@@ -9,9 +9,20 @@ export default class NativeMessageService {
     instance = this;
   }
 
-  async getConfig() {
+  get config() { return this.serviceLocator.get('config') }
+  get uploadService() { return this.serviceLocator.get('upload') }
+  get downloadService() { return this.serviceLocator.get('download') }
+  get logger() { return this.serviceLocator.get('log') }
+
+  async getConfigAsync() {
     return new Promise(resolve => {
-      setTimeout(resolve(true), 1000)
+      setTimeout(() => resolve({ logLevel: 'debug', upload: true, download: true }), 1000)
     })
+  }
+
+  async handleUpdate() {
+    this.downloadService.isEnabled = false
+    this.uploadService.isEnabled = false
+    console.log('we can disable downloadService: ', this.downloadService.isEnabled)
   }
 }

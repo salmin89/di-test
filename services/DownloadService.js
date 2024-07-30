@@ -12,11 +12,16 @@ export default class DownloadService {
   get config() { return this.serviceLocator.get('config') }
   get uploadService() { return this.serviceLocator.get('upload') }
   get logger() { return this.serviceLocator.get('log') }
-  
+
+  isEnabled = false;
 
   download(file) {
-    console.log(this.config)
-    this.logger.log(`Started downloading ${file}`);
-    this.uploadService.upload(file)
+   
+    this.config.then((c) => {
+      console.log('DownloadService: Config', this.config)
+      this.logger.log(`Started downloading ${file}`);
+      this.uploadService.upload(file)
+    })
+    
   }
 }

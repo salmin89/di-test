@@ -8,15 +8,27 @@ export default class App {
   constructor() {
     this.serviceLocator = new ServiceLocator();
 
-    // Initialize and register services
-    this.serviceLocator.register('config', { logLevel: 'debug', upload: false, download: false });
+    let { promise, resolve, reject } = Promise.withResolvers();
+
+    this.serviceLocator.register('config', promise);
     this.serviceLocator.register('log', new LogService(this.serviceLocator));
     this.serviceLocator.register('upload', new UploadService(this.serviceLocator));
     this.serviceLocator.register('download', new DownloadService(this.serviceLocator));
-    
-    this.serviceLocator.register('native', new NativeMessageService(this.serviceLocator).getConfig().then(() => {
-      this.serviceLocator.register('config', { logLevel: 'debug', upload: true, download: true });
-    }));
+
+    const native = new NativeMessageService(this.serviceLocator);
+    this.serviceLocator.register('native', native);
+
+    native.getConfigAsync().then(config => {
+      
+      // option #1 - we only use the promise so we resolve it
+      resolve(config) 
+
+      // option #2 - we overwrite the promise. Will require us to check if config instanceof Promise 
+      // this.serviceLocator.register('config', config); 
+
+      // option #3 - we store them seperately. Might need to check for null/empty
+      // this.serviceLocator.register('configResolved', config); 
+    });
   }
 }
 
@@ -26,6 +38,7 @@ const app = new App();
 
 app.serviceLocator.get('download').download('report.pdf');
 
+
 setTimeout(() => {
-  app.serviceLocator.get('download').download('report.pdf');
+  app.serviceLocator.get('native').handleUpdate();
 }, 2000)
